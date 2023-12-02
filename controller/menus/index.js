@@ -7,16 +7,9 @@ const addMenus = async (req, res) => {
       const result = new menus(req.body);
       const data = await result.save();
       res.status(200).send(data);
-      if (!result) {
-        return res.status(401).send({
-          message: 'Invalid email or password',
-        });
-      }
-      res.status(200).send({result})
     
     } catch (error) {
-      console.error(error);
-      res.status(500).send('Something went wrong');
+      res.status(500).send(`Something went wrong ${error}`);
     }
   };
 
