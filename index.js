@@ -8,11 +8,9 @@ const cors = require('cors');
 const http = require('http');
 const dotenv = require('dotenv');
 dotenv.config();
-
 const port = 3977;
-// mongodb://0.0.0.0:27017/clothingcompany
-const DB ="mongodb://localhost:27017/restaurant_management" ||  process.env.CONNECTION_STRING;
-
+const DB =process.env.CONNECTION_STRING;
+mongodb://localhost:27017/restaurant_management" ||  
 mongoose
   .connect(DB)
   .then(() => {
