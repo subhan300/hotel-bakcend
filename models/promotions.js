@@ -13,9 +13,9 @@ const promotion = new mongoose.Schema({
         ref: 'restaurantMenu',
         required: true,
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
+    openingAt: {
+        type: String,
+        required:true,
     },
 });
 module.exports = new Modal('promotion', promotion);
