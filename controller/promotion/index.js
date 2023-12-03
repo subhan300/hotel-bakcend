@@ -18,10 +18,10 @@ const addPromotion = async (req, res) => {
 
 const getPromotion = async (req, res) => {
     try {
-        console.log(req.body);
 
         const result = await promotion.find({}).populate({path:"restaurantId",select:"name"}).populate({path:"menuId",select:"dish price"});
-        res.status(200).send(result);
+        const filterRestaurants=result.filter(res=>res.restaurantId && res.menuId)
+        res.status(200).send(filterRestaurants);
 
     } catch (error) {
         res.status(500).send(`Something went wrong ${error}`);
