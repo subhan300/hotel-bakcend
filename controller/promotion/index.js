@@ -1,11 +1,13 @@
 const promotion = require("../../models/promotions")
+const mongoose =require("mongoose")
+const ObjectId = mongoose.Types.ObjectId;
 const addPromotion = async (req, res) => {
 
     try {
-        const { menuId, restaurantId, discount, dish, expireDate } = req.body;
+        const { menuId, restaurantId, discount, expireDate } = req.body;
         console.log(req.body);
 
-        const result = new promotion({ menuId, restaurantId, discount, dish, expireDate });
+        const result = new promotion({ menuId:new ObjectId(menuId), restaurantId:new ObjectId(restaurantId), discount, expireDate });
         const data = await result.save();
         res.status(200).send(data);
 
@@ -28,7 +30,7 @@ const getPromotion = async (req, res) => {
 
 const featureRestaurant=async(req,res)=>{
     try {
-        const { menuId, restaurantId, discount, dish, expireDate } = req.body;
+        const { menuId, restaurantId, discount, expireDate } = req.body;
         console.log(req.body);
 
         const result = new promotion({ menuId, restaurantId, discount, dish, expireDate });
