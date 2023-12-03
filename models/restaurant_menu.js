@@ -4,6 +4,7 @@ const restaurantMenu = new mongoose.Schema({
     menuInfo:{type:String,required:false},
     price:{type:Number,required:true},
   dish: { type: String, require: true },
+  img:{type:String,required:true},
   restaurantId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'restaurant',

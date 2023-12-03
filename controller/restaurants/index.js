@@ -83,7 +83,7 @@ const getRestaurants = async (req, res) => {
 
 const getRestaurantAllId = async (req, res) => {
   try {
-    const allIdCollection = await Restaurant.find({}, '_id');
+    const allIdCollection = await Restaurant.find({}, '_id name');
     console.log("==", allIdCollection)
     res.json(allIdCollection);
   } catch (err) {
