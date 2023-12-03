@@ -2,10 +2,10 @@ const promotion = require("../../models/promotions")
 const addPromotion = async (req, res) => {
 
     try {
-        const { restaurantName, restaurantId, discount, dish, expireDate } = req.body;
+        const { menuId, restaurantId, discount, dish, expireDate } = req.body;
         console.log(req.body);
 
-        const result = new promotion({ restaurantName, restaurantId, discount, dish, expireDate });
+        const result = new promotion({ menuId, restaurantId, discount, dish, expireDate });
         const data = await result.save();
         res.status(200).send(data);
 
@@ -18,7 +18,7 @@ const getPromotion = async (req, res) => {
     try {
         console.log(req.body);
 
-        const result = await promotion.find({});
+        const result = await promotion.find({}).populate({path:"restaurantId",select:"name"}).populate({path:"menuId",select:"dish price"});
         res.status(200).send(result);
 
     } catch (error) {

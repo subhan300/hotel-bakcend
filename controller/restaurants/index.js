@@ -57,7 +57,7 @@ const addRestaurants = async (req, res) => {
     session.endSession();
 
     console.error(err);
-    res.status(500).send({ message: 'Failed to create restaurant and menu' });
+    res.status(500).send({ message: err });
   }
 };
 
