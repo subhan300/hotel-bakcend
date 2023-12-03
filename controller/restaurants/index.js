@@ -67,6 +67,9 @@ const getRestaurantById = async (req, res) => {
   try {
     const id=req.query.id
     const restaurant = await Restaurant.aggregate([{
+      $match:{_id:new ObjectId(id)},
+     
+    },{
       $lookup:{
         from:"restaurantmenus",
         localField:"_id",
@@ -74,8 +77,7 @@ const getRestaurantById = async (req, res) => {
         as:"menus"
 
 
-      },
-      $match:{_id:new ObjectId(id)}
+      }
     }])
     console.log("==", restaurant)
     res.send(restaurant);
