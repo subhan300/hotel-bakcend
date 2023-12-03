@@ -3,6 +3,7 @@
 
 const restaurants=require("./routes/restaurants")
 const menu=require("./routes/restaurantMenus/")
+const promotion=require("./routes/promotion")
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -25,6 +26,7 @@ app.use(bodyParser.json());
 // Routes
 app.use('/api/restaurants/', restaurants);
 app.use('/api/menu/', menu);
+app.use('/api/promotion/', promotion);
 
 
 
