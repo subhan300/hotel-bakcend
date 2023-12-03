@@ -18,8 +18,8 @@ const addPromotion = async (req, res) => {
 
 const getPromotion = async (req, res) => {
     try {
-
-        const result = await promotion.find({}).populate({path:"restaurantId",select:"name"}).populate({path:"menuId",select:"dish price"});
+// i filter because in populate if id npot match it still return will null
+        const result = await promotion.find({}).populate({path:"restaurantId",select:"name"}).populate({path:"menuId",select:"dish price img"});
         const filterRestaurants=result.filter(res=>res.restaurantId && res.menuId)
         res.status(200).send(filterRestaurants);
 
