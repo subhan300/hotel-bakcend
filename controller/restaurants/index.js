@@ -37,8 +37,18 @@ const getRestaurants=async (req, res) => {
   }
 }
 
+const getRestaurantAllId=async(req,res)=>{
+  try {
+    const allIdCollection = await Restaurant.find({},'_id');
+    console.log("==",allIdCollection)
+    res.json(allIdCollection);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}
 
 module.exports= {
     addRestaurants,
-    getRestaurants
+    getRestaurants,
+    getRestaurantAllId
 }

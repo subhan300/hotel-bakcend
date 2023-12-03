@@ -9,8 +9,17 @@ const addMenus = async (req, res) => {
       res.status(500).send(`Something went wrong ${error}`);
     }
   };
-
+  const getMenuAllId=async(req,res)=>{
+    try {
+      const allIdCollection = await menus.find({},'_id');
+      console.log("==",allIdCollection)
+      res.json(allIdCollection);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
 
 module.exports={
-    addMenus
+    addMenus,
+    getMenuAllId
 }
