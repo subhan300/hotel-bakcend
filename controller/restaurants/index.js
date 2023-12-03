@@ -8,12 +8,12 @@ const addRestaurants = async (req, res) => {
   session.startTransaction();
 
   try {
-    const { name, email, phone, location, logo, menus } = req.body;
+    const { name, email, phone, location, logo, menus,description } = req.body;
     const checkRestaurant = await globalController.checkExistingRecordByAttribute(name)
     if (checkRestaurant) {
       return res.status(401).send({ message: "Restaurant  Name Already Exist" })
     }
-    const restaurant = new Restaurant({ name, email, phone, logo, location });
+    const restaurant = new Restaurant({ name, email, phone, logo, location ,description});
     const savedRestaurant = await restaurant.save({ session });
 
     const menuData = menus.map(val => ({ restaurantId: savedRestaurant._id, ...val }));
