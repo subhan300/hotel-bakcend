@@ -14,7 +14,6 @@ const ensureUserAuth = async function (req, res, next) {
   try {
     const decodedToken = jwt.verify(token, 'hotel123');
     const { _id } = decodedToken.result;
-    console.log(_id);
     await user.findById(_id)
       .exec()
       .then((user) => {
