@@ -1,10 +1,11 @@
 
 'use strict';
 
-const restaurants=require("./routes/restaurants")
-const menu=require("./routes/restaurantMenus/")
-const promotion=require("./routes/promotion")
-const user=require("./routes/user")
+const restaurants = require("./routes/restaurants")
+const menu = require("./routes/restaurantMenus/")
+const promotion = require("./routes/promotion")
+const review = require("./routes/review")
+const user = require("./routes/user")
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -18,6 +19,8 @@ app.use('/api/restaurants/', restaurants);
 app.use('/api/menu/', menu);
 app.use('/api/promotion/', promotion);
 app.use('/api/user/', user);
+app.use('/api/review/', review);
+
 
 
 

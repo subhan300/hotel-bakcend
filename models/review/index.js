@@ -1,17 +1,17 @@
 var mongoose = require('mongoose');
 
-var review = new mongoose.Schema({
+const review = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
         required: true,
     },
     title: { type: String, required: true },
-    review: { type: String, required: true },
-    foodQuality: { type: Number, required: true },
-    service: { type: Number, required: true },
-    location: { type: Number, required: true },
-    price: { type: Number, required: true },
+    review: { type: String, required: true, min: 1, max: 5 },
+    foodQuality: { type: Number, required: true, min: 1, max: 5 },
+    service: { type: Number, required: true, min: 1, max: 5 },
+    location: { type: Number, required: true, min: 1, max: 5 },
+    price: { type: Number, required: true, min: 1, max: 5 },
 
 
 
