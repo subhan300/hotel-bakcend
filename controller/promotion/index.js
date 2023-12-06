@@ -27,21 +27,11 @@ const addPromotion = async (req, res) => {
 const getPromotion = async (req, res) => {
     try {
         const result = await promotion.find({}).populate({ path: "restaurantId", select: "name" }).populate({ path: "menuId", select: "dish price img" });
+    //   always check from : mongoose collection name 
         // const pipeline = [
         //     {
         //         $lookup: {
         //             from: 'restaurantmenus',
-        //             localField: 'menuId',
-        //             foreignField: '_id',
-        //             as: 'restaurant',
-        //         },
-        //     },
-        //     {
-        //         $unwind: '$restaurant',
-        //     },
-        //     {
-        //         $lookup: {
-        //             from: 'restaurantMenu',
         //             localField: 'menuId',
         //             foreignField: '_id',
         //             as: 'menu',
@@ -49,6 +39,17 @@ const getPromotion = async (req, res) => {
         //     },
         //     {
         //         $unwind: '$menu',
+        //     },
+        //     {
+        //         $lookup: {
+        //             from: 'restaurants',
+        //             localField: 'restaurantId',
+        //             foreignField: '_id',
+        //             as: 'restaurant',
+        //         },
+        //     },
+        //     {
+        //         $unwind: '$restaurant',
         //     },
         //     {
         //         $project: {
@@ -63,8 +64,11 @@ const getPromotion = async (req, res) => {
 
 
 
-        // const resi = await promotion.aggregate(pipeline)
-        // console.log("res===", resi)
+  
+        const resi = await promotion.aggregate(pipeline)
+        console.log("res===", resi)
+
+        const filterRestaurants = result.filter(res => res.restaurantId && res.menuId)
         res.status(200).send(result);
 
     } catch (error) {
