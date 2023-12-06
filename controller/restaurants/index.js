@@ -167,6 +167,35 @@ const getRestaurantById = async (req, res) => {
         as: "menus"
 
 
+      },
+      
+    },
+    { $unwind: '$menus' },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'menus.category',
+        foreignField: '_id',
+        as: 'menus.category',
+      }
+    },
+    {
+      $group: {
+        _id: '$_id',
+        name: { $first: '$name' },
+        email: { $first: '$email' },
+        phone: { $first: '$phone' },
+        logo: { $first: '$logo' },
+        description: { $first: '$description' },
+        menus: {
+          $push: {
+            _id: '$menus._id',
+            dish: '$menus.dish',
+            price: '$menus.price',
+            img: '$menus.img',
+            category: { $arrayElemAt: ['$menus.category', 0] }
+          }
+        }
       }
     }])
     console.log("==", restaurant)
