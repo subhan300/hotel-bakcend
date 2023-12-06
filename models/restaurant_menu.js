@@ -11,8 +11,8 @@ const restaurantMenu = new mongoose.Schema({
     required: true,
   },
   category: {
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
-    type: String
   },
   createdAt: {
     type: Date,

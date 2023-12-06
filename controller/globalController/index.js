@@ -1,18 +1,12 @@
 const Restaurant = require("../../models/restaurant")
 const helperModel=require("../../models/helperModels")
-const checkExistingRecordByAttribute = async (name) => {
+const checkRecordExist = async (model,key,value) => {
     try {
-        const existingRestaurant = await Restaurant.findOne({ name: name });
-
-        if (existingRestaurant) {
-            // Restaurant with the same name exists
-            return true
-        }
-
-        // Restaurant with the given name doesn't exist
-        return false;
+        const  isExist = await model.exists({[key]:value})
+        console.log("ex",isExist)
+        return isExist
     } catch (error) {
-        console.log(err)
+        console.log(error)
     }
 };
 
@@ -21,7 +15,6 @@ const addCategory=async(req,res)=>{
         const categoryReqList=req.body;
         console.log(categoryReqList)
         const addCategoryList=await helperModel.category.insertMany(categoryReqList)
-        console.log("res===",addCategoryList)
         res.status(200).send(addCategoryList)
 
     }catch(err){
@@ -60,9 +53,9 @@ const getLocation=async(req,res)=>{
 }
 
 module.exports = {
-    checkExistingRecordByAttribute,
     addCategory,
     getCategory,
     addLocation,
-    getLocation
+    getLocation,
+    checkRecordExist
 }

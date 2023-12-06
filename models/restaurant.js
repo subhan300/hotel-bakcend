@@ -6,7 +6,11 @@ const restaurant = new mongoose.Schema({
   email: { type: String, required: true },
   phone: { type: String, required: true },
   logo: { type: String, required: true },
-  location: { type: String, required: true },
+  location: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
+
   menus: { type: Array, required: true },
   description: { type: String, required: true },
 

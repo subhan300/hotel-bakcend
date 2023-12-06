@@ -1,6 +1,7 @@
 const Restaurant = require("../../models/restaurant")
 const restaurantMenu = require("../../models/restaurant_menu")
 const globalController = require("../../controller/globalController")
+const helper = require("../../models/helperModels")
 const mongoose = require("mongoose")
 const ObjectId = mongoose.Types.ObjectId;
 const addRestaurants = async (req, res) => {
@@ -8,12 +9,13 @@ const addRestaurants = async (req, res) => {
   session.startTransaction();
 
   try {
-    const { name, email, phone, location, logo, menus,description } = req.body;
-    const checkRestaurant = await globalController.checkExistingRecordByAttribute(name)
-    if (checkRestaurant) {
-      return res.status(401).send({ message: "Restaurant  Name Already Exist" })
+    const { name, email, phone, location, logo, menus, description } = req.body;
+
+    const checkRestaurant = await globalController.checkRecordExist(helper.location, '_id', location)
+    if (!checkRestaurant) {
+      return res.status(401).send({ message: "Location Not Exist Exist" })
     }
-    const restaurant = new Restaurant({ name, email, phone, logo, location ,description});
+    const restaurant = new Restaurant({ name, email, phone, logo, location, description });
     const savedRestaurant = await restaurant.save({ session });
 
     const menuData = menus.map(val => ({ restaurantId: savedRestaurant._id, ...val }));
@@ -30,11 +32,70 @@ const addRestaurants = async (req, res) => {
     session.endSession();
 
     console.error(err);
-    res.status(500).send({ message: err });
+    res.status(500).send({ message: err.message });
   }
 };
 
 
+// const getRestaurants = async (req, res) => {
+//   try {
+//     const restaurantsWithMenus = await Restaurant.aggregate([
+//       {
+//         $lookup: {
+//           from: 'restaurantmenus',
+//           localField: '_id',
+//           foreignField: 'restaurantId',
+//           as: 'menus'
+//         }
+//       },
+//       {
+//         $lookup: {
+//           from: 'categories',
+//           localField: 'menus.category',
+//           foreignField: '_id',
+//           as: 'menus.category',
+//         }
+//       }
+//       ,
+//       { $unwind: '$menus' },
+//       // { $unwind: '$category' },
+//       {
+//         $lookup: {
+//           from: 'locations',
+//           localField: 'location',
+//           foreignField: '_id',
+//           as: 'location'
+//         },
+//       },
+//       { $unwind: '$location' },
+
+//       // {
+//       //   $project: {
+//       //     _id: 1,
+//       //     name: 1,
+//       //     menus: {
+//       //       $map: {
+//       //         input: '$menus',
+//       //         as: 'menu',
+//       //         in: {
+//       //           menuInfo: '$$menu.menuInfo',
+//       //           category: { $arrayElemAt: ['$$menu.category.name', 0] },
+//       //           dishes: '$$menu.dishes',
+//       //         },
+//       //       },
+//       //     },
+//       //     location: {
+//       //       street: '$location.street',
+//       //     },
+//       //   },
+//       // }
+//     ]);
+//     console.log("==", restaurantsWithMenus)
+//     res.json(restaurantsWithMenus);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// }
 const getRestaurants = async (req, res) => {
   try {
     const restaurantsWithMenus = await Restaurant.aggregate([
@@ -45,14 +106,43 @@ const getRestaurants = async (req, res) => {
           foreignField: 'restaurantId',
           as: 'menus'
         }
+      },
+      { $unwind: '$menus' },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'menus.category',
+          foreignField: '_id',
+          as: 'menus.category',
+        }
+      },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          email: { $first: '$email' },
+          phone: { $first: '$phone' },
+          logo: { $first: '$logo' },
+          description: { $first: '$description' },
+          menus: {
+            $push: {
+              _id: '$menus._id',
+              dish: '$menus.dish',
+              price: '$menus.price',
+              img: '$menus.img',
+              category: { $arrayElemAt: ['$menus.category', 0] }
+            }
+          }
+        }
       }
     ]);
-    console.log("==", restaurantsWithMenus)
+
     res.json(restaurantsWithMenus);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 }
+
 
 const getRestaurantAllId = async (req, res) => {
   try {
@@ -65,16 +155,16 @@ const getRestaurantAllId = async (req, res) => {
 
 const getRestaurantById = async (req, res) => {
   try {
-    const id=req.query.id
+    const id = req.query.id
     const restaurant = await Restaurant.aggregate([{
-      $match:{_id:new ObjectId(id)},
-     
-    },{
-      $lookup:{
-        from:"restaurantmenus",
-        localField:"_id",
-        foreignField:"restaurantId",
-        as:"menus"
+      $match: { _id: new ObjectId(id) },
+
+    }, {
+      $lookup: {
+        from: "restaurantmenus",
+        localField: "_id",
+        foreignField: "restaurantId",
+        as: "menus"
 
 
       }
@@ -89,6 +179,6 @@ module.exports = {
   addRestaurants,
   getRestaurants,
   getRestaurantAllId,
-  getRestaurantById 
-  
+  getRestaurantById
+
 }

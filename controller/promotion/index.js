@@ -65,10 +65,10 @@ const getPromotion = async (req, res) => {
 
 
   
-        const resi = await promotion.aggregate(pipeline)
-        console.log("res===", resi)
+        // const resi = await promotion.aggregate(pipeline)
+        // console.log("res===", resi)
 
-        const filterRestaurants = result.filter(res => res.restaurantId && res.menuId)
+        // const filterRestaurants = result.filter(res => res.restaurantId && res.menuId)
         res.status(200).send(result);
 
     } catch (error) {
