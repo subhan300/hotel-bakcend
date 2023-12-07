@@ -163,6 +163,18 @@ const searchRestaurant = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+const searchRestaurantByName = async (req, res) => {
+  try {
+    const name = req.query.name;
+    let restaurantsCombine = await globalFunctions.completeRestaurantResponse([]);
+    let searchResult=restaurantsCombine.filter(val=>val.name===name)
+    return res.status(200).send(searchResult);
+
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 const filterRestaurant = async (req, res) => {
   try {
     const queryKeys = req.query;
@@ -187,4 +199,5 @@ module.exports = {
   getRestaurantAllId,
   getRestaurantById,
   searchRestaurant,
+  searchRestaurantByName
 };

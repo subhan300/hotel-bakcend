@@ -8,5 +8,6 @@ router.get("/getAll",actions.getRestaurants)
 router.get("/getAllId",actions.getRestaurantAllId)
 router.get("/getRestaurantById",actions.getRestaurantById)
 router.get("/searchRestaurant",actions.searchRestaurant)
+router.get("/searchByName",actions.searchRestaurantByName)
 
 module.exports=router
