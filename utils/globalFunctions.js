@@ -42,6 +42,15 @@ const completeRestaurantResponse=async(items)=>{
     { $unwind: "$location" },
     {
       $lookup: {
+        from: "reviews",
+        localField: "_id",
+        foreignField: "restaurantId",
+        as: "review",
+      },
+    },
+    { $unwind: "$review" },
+    {
+      $lookup: {
         from: "categories",
         localField: "menus.category",
         foreignField: "_id",
@@ -57,6 +66,7 @@ const completeRestaurantResponse=async(items)=>{
         logo: { $first: "$logo" },
         description: { $first: "$description" },
         locations: { $first: "$location.street" },
+        reviews:{$first:"$review.rating"},
         menus: {
           $push: {
             _id: "$menus._id",

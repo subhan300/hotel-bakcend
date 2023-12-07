@@ -167,7 +167,7 @@ const searchRestaurantByName = async (req, res) => {
   try {
     const name = req.query.name;
     let restaurantsCombine = await globalFunctions.completeRestaurantResponse([]);
-    let searchResult=restaurantsCombine.filter(val=>val.name===name)
+    let searchResult = restaurantsCombine.filter(val => val.name === name)
     return res.status(200).send(searchResult);
 
 
@@ -177,17 +177,29 @@ const searchRestaurantByName = async (req, res) => {
 };
 const filterRestaurant = async (req, res) => {
   try {
-    const queryKeys = req.query;
-    // const queryKeys=[location, category, price, rating, dish ]
-    console.log(queryKeys)
+    const keyCollection = req.query
+    let restaurants = await globalFunctions.completeRestaurantResponse([]);
+    for (const key in keyCollection) {
+      const value = keyCollection[key];
+      if (key === "location") {
+        restaurants = restaurants.filter(val => val.locations === value)
+      } else if (key === "category") {
+        const categoryList = value.split(',')
+        restaurants = restaurants.filter(restaurant => restaurant.menus.some(menu => categoryList.includes(menu.category.name)))
+      } else if (key === "price") {
+        const priceList = value.split(',')
+        console.log('price',priceList)
+        restaurants = restaurants.filter(restaurant => restaurant.menus.some(menu => priceList.some(price => menu.price <= Number(price))))
+      } else if (key === "rating") {
+        const ratingList=value.split(',')
+        console.log('rating',ratingList)
+        restaurants = restaurants.filter(restaurant =>ratingList.some(rating=>restaurant.reviews>=Number(rating)))
+       console.log(restaurants)
+      }
 
-    // console.log("id==", location, category, price, rating, dish);
-    // const restaurantsCombineWithLocation=await globalFunctions.restaurantCombineWithChunk('locations','location','_id','location')
-    // const restaurantsCombineWithMenu=await globalFunctions.restaurantCombineWithChunk('restaurantmenus','_id','restaurantId','menus')
-    // const filterByCategory=await restaurantsCombineWithMenu.filter(val=>val.menus.dish===dish);
+    }
 
-    // const filterByLocation=restaurantsCombineWithLocation.filter(val=>val.location.street===location)
-    res.send('filterByCategory');
+    res.status(200).send(restaurants);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -199,5 +211,6 @@ module.exports = {
   getRestaurantAllId,
   getRestaurantById,
   searchRestaurant,
-  searchRestaurantByName
+  searchRestaurantByName,
+  filterRestaurant
 };

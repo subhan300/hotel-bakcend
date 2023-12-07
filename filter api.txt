@@ -1,0 +1,3 @@
+if user has already search by location must include location as well to search by it.
+
+
