@@ -10,4 +10,5 @@ router.get("/getAllLocations",actions.getLocation)
 
 
 
+
 module.exports=router

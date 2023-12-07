@@ -7,6 +7,6 @@ router.post("/add",actions.addRestaurants)
 router.get("/getAll",actions.getRestaurants)
 router.get("/getAllId",actions.getRestaurantAllId)
 router.get("/getRestaurantById",actions.getRestaurantById)
-
+router.get("/searchRestaurant",actions.searchRestaurant)
 
 module.exports=router
