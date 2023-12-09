@@ -19,8 +19,89 @@ const restaurantCombineWithChunk = async (from, localField, foreignField, as) =>
   return restaurantCombine
 }
 
-const completeRestaurantResponse=async(items)=>{
-  const response= await Restaurant.aggregate([
+// const completeRestaurantResponse = async (items) => {
+//   const response = await Restaurant.aggregate([
+//     ...items,
+//     {
+//       $lookup: {
+//         from: "restaurantmenus",
+//         localField: "_id",
+//         foreignField: "restaurantId",
+//         as: "menus",
+//       },
+//     },
+//     { $unwind: "$menus" },
+//     {
+//       $lookup: {
+//         from: "locations",
+//         localField: "location",
+//         foreignField: "_id",
+//         as: "location",
+//       },
+//     },
+//     { $unwind: "$location" },
+//     {
+//       $lookup: {
+//         from: "reviews",
+//         localField: "_id",
+//         foreignField: "restaurantId",
+//         as: "review",
+//       },
+//     },
+//     { $unwind: { path: "$review", preserveNullAndEmptyArrays: true } }, // Preserve null reviews
+//     {
+//       $lookup: {
+//         from: "categories",
+//         localField: "menus.category",
+//         foreignField: "_id",
+//         as: "menus.category",
+//       },
+//     },
+//     {
+//       $group: {
+//         _id: "$_id",
+//         name: { $first: "$name" },
+//         email: { $first: "$email" },
+//         phone: { $first: "$phone" },
+//         logo: { $first: "$logo" },
+//         description: { $first: "$description" },
+//         locations: { $first: "$location.street" },
+//         reviews: { $max: { $ifNull: ["$review.rating", 0] } }, // Use $max to consider non-null reviews
+//         menus: {
+//           $push: {
+//             _id: "$menus._id",
+//             dish: "$menus.dish",
+//             price: "$menus.price",
+//             img: "$menus.img",
+//             category: { $arrayElemAt: ["$menus.category", 0] },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       $project: {
+//         _id: 1,
+//         name: 1,
+//         email: 1,
+//         phone: 1,
+//         logo: 1,
+//         description: 1,
+//         locations: 1,
+//         reviews: {
+//           $cond: {
+//             if: { $eq: ["$reviews", null] },
+//             then: 0,
+//             else: "$reviews",
+//           },
+//         },
+//         menus: 1,
+//       },
+//     },
+//   ]);
+//   return response;
+// };
+const completeRestaurantResponse = async (items) => {
+  const response = await Restaurant.aggregate([
     ...items,
     {
       $lookup: {
@@ -43,12 +124,19 @@ const completeRestaurantResponse=async(items)=>{
     {
       $lookup: {
         from: "reviews",
-        localField: "_id",
-        foreignField: "restaurantId",
+        let: { restaurantId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $and: [{ $eq: ["$restaurantId", "$$restaurantId"] }, { $gt: ["$rating", 0] }] },
+            },
+          },
+          { $limit: 1 }, // Limit 1 review per restaurant
+        ],
         as: "review",
       },
     },
-    { $unwind: "$review" },
+    { $unwind: { path: "$review", preserveNullAndEmptyArrays: true } }, // Preserve null reviews
     {
       $lookup: {
         from: "categories",
@@ -66,7 +154,7 @@ const completeRestaurantResponse=async(items)=>{
         logo: { $first: "$logo" },
         description: { $first: "$description" },
         locations: { $first: "$location.street" },
-        reviews:{$first:"$review.rating"},
+        reviews: { $max: { $ifNull: ["$review.rating", 0] } },
         menus: {
           $push: {
             _id: "$menus._id",
@@ -78,9 +166,30 @@ const completeRestaurantResponse=async(items)=>{
         },
       },
     },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        email: 1,
+        phone: 1,
+        logo: 1,
+        description: 1,
+        locations: 1,
+        reviews: {
+          $cond: {
+            if: { $eq: ["$reviews", null] },
+            then: 0,
+            else: "$reviews",
+          },
+        },
+        menus: 1,
+      },
+    },
   ]);
-  return response
-}
+  return response;
+};
+
+
 module.exports = {
   restaurantCombineWithChunk,
   completeRestaurantResponse

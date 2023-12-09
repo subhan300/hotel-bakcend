@@ -34,6 +34,7 @@ const addRestaurants = async (req, res) => {
       restaurantId: savedRestaurant._id,
       ...val,
     }));
+    console.log("menu====",menuData)
     const menuCollection = await restaurantMenu.insertMany(menuData, {
       session,
     });

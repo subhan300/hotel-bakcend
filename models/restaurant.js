@@ -11,7 +11,6 @@ const restaurant = new mongoose.Schema({
     required: true,
   },
 
-  menus: { type: Array, required: true },
   description: { type: String, required: true },
 
   createdAt: {
