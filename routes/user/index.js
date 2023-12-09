@@ -5,7 +5,7 @@ const authMiddleware=require("../../middleware/authentication")
 const router=app.Router()
 
 router.post("/signup",actions.signUp)
-router.get("/login",actions.login)
+router.post("/login",actions.login)
 
 
 
