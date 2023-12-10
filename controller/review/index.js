@@ -28,7 +28,7 @@ const getReview = async (req, res) => {
     try {
         const {id}=req.query
         console.log("id==",id)
-        const getReviews = await Review.find({restaurantId:id})
+        const getReviews = await Review.find({restaurantId:id}).populate("userId")
         res.status(200).send(getReviews)
     } catch (err) {
         res.status(401).send(err)
