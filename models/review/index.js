@@ -10,12 +10,7 @@ const review = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
-    title: { type: String, required: true },
-    review: { type: String, required: true, min: 1, max: 5 },
-    foodQuality: { type: Number, required: true, min: 1, max: 5 },
-    service: { type: Number, required: true, min: 1, max: 5 },
-    location: { type: Number, required: true, min: 1, max: 5 },
-    price: { type: Number, required: true, min: 1, max: 5 },
+    review: { type: String, required: true },
     rating: { type: Number ,required:true},
     createdAt: {
         type: Date,
