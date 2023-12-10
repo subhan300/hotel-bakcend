@@ -26,8 +26,9 @@ const addReview = async (req, res) => {
 
 const getReview = async (req, res) => {
     try {
-        const getReviews = await Review.find({})
-         const id=req.query.id
+        const {id}=req.query
+        console.log("id==",id)
+        const getReviews = await Review.find({restaurantId:id})
         res.status(200).send(getReviews)
     } catch (err) {
         res.status(401).send(err)
