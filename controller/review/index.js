@@ -4,7 +4,7 @@ const User=require("../../models/users")
 const addReview = async (req, res) => {
     try {
         const { userId, review,rating,restaurantId } = req.body
-        const createReview = new Review({ userId, rating,review, rating,restaurantId  })
+        const createReview = new Review({ userId, review, rating,restaurantId  })
         const reviewExistOfUser = await Review.findOne({ userId })
         
         if (reviewExistOfUser) {
