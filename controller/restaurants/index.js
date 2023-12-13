@@ -10,7 +10,7 @@ const addRestaurants = async (req, res) => {
   session.startTransaction();
 
   try {
-    const { name, email, phone, location, logo, menus, description,bannerImg } = req.body;
+    const { name, email, phone, location, logo, menus, description,bannerImg ,businessInfo} = req.body;
 
     const checkRestaurant = await globalController.checkRecordExist(
       helper.location,
@@ -27,7 +27,8 @@ const addRestaurants = async (req, res) => {
       logo,
       location,
       description,
-      bannerImg
+      bannerImg,
+      businessInfo
     });
     const savedRestaurant = await restaurant.save({ session });
 

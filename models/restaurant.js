@@ -7,6 +7,7 @@ const restaurant = new mongoose.Schema({
   phone: { type: String, required: true },
   logo: { type: String, required: true },
   bannerImg: { type: String, required: true },
+  businessInfo:{ type: String, required: true },
   location: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
