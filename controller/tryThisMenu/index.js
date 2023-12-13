@@ -5,7 +5,6 @@ const addTryMenuItems = async (req, res) => {
     try {
         const { menuId} = req.body;
         const isExistItem=await isExist(TryMenuItem,{menuId});
-        console.log("---",isExistItem)
         if(isExistItem){
           return  res.status(401).send("Already Exist")
         }

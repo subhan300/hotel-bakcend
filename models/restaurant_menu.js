@@ -18,5 +18,9 @@ const restaurantMenu = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  cusines: {
+    required: true,
+  type: mongoose.Schema.Types.ObjectId,
+  }
 });
 module.exports = new Modal('restaurantMenu', restaurantMenu);

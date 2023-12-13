@@ -52,10 +52,32 @@ const getLocation=async(req,res)=>{
     }
 }
 
+const addCusines=async(req,res)=>{
+    try{  
+        const cusinesCategoryReqList=req.body;
+        const addCusinesList=await helperModel.cusines.insertMany(cusinesCategoryReqList)
+        res.status(200).send(addCusinesList)
+
+    }catch(err){
+          res.status(401).send({message:err.message})
+    }
+}
+
+const getCusines=async(req,res)=>{
+    try{
+        const getCategories=await helperModel.cusines.find({})
+        res.status(200).send(getCategories)
+
+    }catch(err){
+          res.status(401).send({message:err.message})
+    }
+}
 module.exports = {
     addCategory,
     getCategory,
     addLocation,
     getLocation,
-    checkRecordExist
+    checkRecordExist,
+    addCusines,
+    getCusines
 }
