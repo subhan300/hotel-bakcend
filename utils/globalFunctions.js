@@ -191,6 +191,7 @@ const completeRestaurantResponse = async (items) => {
 
 const isExist = async (model, criteria)=> {
   try {
+    console.log(criteria,'--',model)
     const document = await model.findOne(criteria); // Search based on criteria
     return !!document; // Returns true if document exists, false if not
   } catch (error) {

@@ -139,7 +139,9 @@ const getPromotion = async (req, res) => {
                 $group: {
                     _id: '$menuId',
                     restaurant: { $first: '$restaurant.name' },
+                    restaurantId: { $first: '$restaurant._id' },
                     menu: { $first: '$menu.dish' },
+                    menuId: { $first: '$menu._id' },
                     img: { $first: '$menu.img' },
                     price: { $first: '$menu.price' },
                     discount: { $first: '$discount' },
@@ -152,7 +154,9 @@ const getPromotion = async (req, res) => {
                 $project: {
                     _id: 0,
                     restaurant: 1,
+                    restaurantId: 1,
                     menu: 1,
+                    menuId: 1,
                     img: 1,
                     price: 1,
                     discount: 1,
