@@ -16,7 +16,7 @@ const addPromotion = async (req, res) => {
             { path: "restaurantId", select: "name" },
             { path: "menuId", select: "dish price img" }
         ]);
-        console.log("promo info====", promotionInfo)
+       
         res.status(200).send(promotionInfo);
 
     } catch (error) {

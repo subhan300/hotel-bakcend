@@ -189,8 +189,19 @@ const completeRestaurantResponse = async (items) => {
   return response;
 };
 
+const isExist = async (model, criteria)=> {
+  try {
+    const document = await model.findOne(criteria); // Search based on criteria
+    return !!document; // Returns true if document exists, false if not
+  } catch (error) {
+    // Handle error if findOne() encounters an issue (e.g., database error)
+    console.error('Error:', error);
+    return false; // Return false in case of an error
+  }
+}
 
 module.exports = {
   restaurantCombineWithChunk,
-  completeRestaurantResponse
+  completeRestaurantResponse,
+  isExist
 }

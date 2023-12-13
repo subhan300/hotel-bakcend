@@ -11,6 +11,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const popularRestaurant = require("./routes/popularRestaurant");
+const tryMenuItem = require("./routes/tryThisMenu");
 const app = express();
 
 app.use(cors({ origin: '*' }));
@@ -24,6 +25,7 @@ app.use('/api/user/', user);
 app.use('/api/review/', review);
 app.use("/api/helper",helperCollection)
 app.use("/api/popular",popularRestaurant)
+app.use("/api/tryMenuItem",tryMenuItem)
 
 
 

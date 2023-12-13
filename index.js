@@ -14,7 +14,7 @@ const DB =process.env.CONNECTION_STRING;
 // mongodb://localhost:27017/restaurant_management" ||  
 
 mongoose
-  .connect(DB)
+  .connect(DB,{serverSelectionTimeoutMS: 30000})
   .then(() => {
     try {
       console.log('connection successfully !');
