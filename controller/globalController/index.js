@@ -63,6 +63,27 @@ const addCusines=async(req,res)=>{
     }
 }
 
+const getLikeMenuItem=async(req,res)=>{
+    try{
+        const getCategories=await helperModel.menuLikeItem.find({})
+        res.status(200).send(getCategories)
+
+    }catch(err){
+          res.status(401).send({message:err.message})
+    }
+}
+const addLikeMenuItem=async(req,res)=>{
+    try{  
+        const {userId,menuId,userLike}=req.body;
+        const addLikeItem=await new helperModel.menuLikeItem({userId,menuId,userLike})
+        const saveResult=await addLikeItem.save()
+        res.status(200).send(saveResult)
+
+    }catch(err){
+          res.status(401).send({message:err.message})
+    }
+}
+
 const getCusines=async(req,res)=>{
     try{
         const getCategories=await helperModel.cusines.find({})
@@ -79,5 +100,7 @@ module.exports = {
     getLocation,
     checkRecordExist,
     addCusines,
-    getCusines
+    getCusines,
+    addLikeMenuItem,
+    getLikeMenuItem
 }

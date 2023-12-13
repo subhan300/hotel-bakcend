@@ -20,8 +20,7 @@ const addTryMenuItems = async (req, res) => {
 
 const getTryMenuItems = async (req, res) => {
     try {
-        const {id}=req.query
-        const getReviews = await TryMenuItem.find({menuId:id}).populate("menuId")
+        const getReviews = await TryMenuItem.find({})
         res.status(200).send(getReviews)
     } catch (err) {
         res.status(401).send(err)
