@@ -159,6 +159,20 @@ const getPromotion = async (req, res) => {
                     openingAt: 1,
                     expireDate: 1,
                     menuLikeItems:1,
+                    trueLikesCount: {
+                        $reduce: {
+                          input: "$menuLikeItems",
+                          initialValue: 0,
+                          in: {
+                            $cond: {
+                              if: { $eq: ["$$this", true] },
+                              then: { $add: ["$$value", 1] },
+                              else: "$$value"
+                            }
+                          }
+                        }
+                      }
+                    
                 },
             },
         ];
