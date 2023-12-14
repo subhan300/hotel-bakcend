@@ -63,6 +63,7 @@ const getTryMenuItems = async (req, res) => {
             $project: {
                 _id: 0,
                 menuId: 1,
+                restaurantId:1,
                 dish: 1,
                 price:1,
                 img:1,
