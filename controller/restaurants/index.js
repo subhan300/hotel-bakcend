@@ -10,7 +10,7 @@ const addRestaurants = async (req, res) => {
   session.startTransaction();
 
   try {
-    const { name, email, phone, location, logo, menus, description,bannerImg ,businessInfo} = req.body;
+    const { name, email, phone, location, logo, menus, description, bannerImg, businessInfo } = req.body;
 
     const checkRestaurant = await globalController.checkRecordExist(
       helper.location,
@@ -36,7 +36,7 @@ const addRestaurants = async (req, res) => {
       restaurantId: savedRestaurant._id,
       ...val,
     }));
-    console.log("menu====",menuData)
+    console.log("menu====", menuData)
     const menuCollection = await restaurantMenu.insertMany(menuData, {
       session,
     });
@@ -56,65 +56,7 @@ const addRestaurants = async (req, res) => {
   }
 };
 
-// const getRestaurants = async (req, res) => {
-//   try {
-//     const restaurantsWithMenus = await Restaurant.aggregate([
-//       {
-//         $lookup: {
-//           from: 'restaurantmenus',
-//           localField: '_id',
-//           foreignField: 'restaurantId',
-//           as: 'menus'
-//         }
-//       },
-//       {
-//         $lookup: {
-//           from: 'categories',
-//           localField: 'menus.category',
-//           foreignField: '_id',
-//           as: 'menus.category',
-//         }
-//       }
-//       ,
-//       { $unwind: '$menus' },
-//       // { $unwind: '$category' },
-//       {
-//         $lookup: {
-//           from: 'locations',
-//           localField: 'location',
-//           foreignField: '_id',
-//           as: 'location'
-//         },
-//       },
-//       { $unwind: '$location' },
 
-//       // {
-//       //   $project: {
-//       //     _id: 1,
-//       //     name: 1,
-//       //     menus: {
-//       //       $map: {
-//       //         input: '$menus',
-//       //         as: 'menu',
-//       //         in: {
-//       //           menuInfo: '$$menu.menuInfo',
-//       //           category: { $arrayElemAt: ['$$menu.category.name', 0] },
-//       //           dishes: '$$menu.dishes',
-//       //         },
-//       //       },
-//       //     },
-//       //     location: {
-//       //       street: '$location.street',
-//       //     },
-//       //   },
-//       // }
-//     ]);
-//     console.log("==", restaurantsWithMenus)
-//     res.json(restaurantsWithMenus);
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// }
 const getRestaurants = async (req, res) => {
   try {
     const restaurantsWithMenus = await globalFunctions.completeRestaurantResponse([])
@@ -155,7 +97,18 @@ const searchRestaurant = async (req, res) => {
     if (queryKey.location) {
       searchResult = restaurantsCombine.filter(val => val.locations === queryKey.location)
     } else if (queryKey.dish) {
-      searchResult = restaurantsCombine.filter(val => val.menus.some(menu => menu.dish === queryKey.dish))
+       searchResult = []
+      restaurantsCombine.forEach(val => {
+        const filterMenu = val.menus.filter(menu => menu.dish === queryKey.dish)
+
+        console.log("menus===>", filterMenu);
+        if (filterMenu.length) {
+          searchResult.push({ ...val, menus: filterMenu })
+        }
+
+      }
+      )
+      // console.log(searchResult)
     } else {
       return res.status(401).send('search with dish or location');
     }
@@ -191,13 +144,13 @@ const filterRestaurant = async (req, res) => {
         restaurants = restaurants.filter(restaurant => restaurant.menus.some(menu => categoryList.includes(menu.category.name)))
       } else if (key === "price") {
         const priceList = value.split(',')
-        console.log('price',priceList)
+        console.log('price', priceList)
         restaurants = restaurants.filter(restaurant => restaurant.menus.some(menu => priceList.some(price => menu.price <= Number(price))))
       } else if (key === "rating") {
-        const ratingList=value.split(',')
-        console.log('rating',ratingList)
-        restaurants = restaurants.filter(restaurant =>ratingList.some(rating=>restaurant.reviews>=Number(rating)))
-       console.log(restaurants)
+        const ratingList = value.split(',')
+        console.log('rating', ratingList)
+        restaurants = restaurants.filter(restaurant => ratingList.some(rating => restaurant.reviews >= Number(rating)))
+        console.log(restaurants)
       }
 
     }
