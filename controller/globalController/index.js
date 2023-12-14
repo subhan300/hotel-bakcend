@@ -31,6 +31,27 @@ const getCategory=async(req,res)=>{
           res.status(401).send({message:err.message})
     }
 }
+const addTypes=async(req,res)=>{
+    try{
+        const typeReqList=req.body;
+        console.log(typeReqList)
+        const addTypeList=await helperModel.type.insertMany(typeReqList)
+        res.status(200).send(addTypeList)
+
+    }catch(err){
+          res.status(401).send({message:err.message})
+    }
+}
+
+const getTypes=async(req,res)=>{
+    try{
+        const getTypes=await helperModel.type.find({})
+        res.status(200).send(getTypes)
+
+    }catch(err){
+          res.status(401).send({message:err.message})
+    }
+}
 const addLocation=async(req,res)=>{
     try{
         const LocationReqList=req.body;
@@ -102,5 +123,7 @@ module.exports = {
     addCusines,
     getCusines,
     addLikeMenuItem,
-    getLikeMenuItem
+    getLikeMenuItem,
+    addTypes,
+    getTypes
 }

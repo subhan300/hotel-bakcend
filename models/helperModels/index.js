@@ -7,6 +7,13 @@ const category = new mongoose.Schema({
 
 });
 
+const type = new mongoose.Schema({
+    type: { type: String, required: true, lowercase: true },
+
+
+
+});
+
 const cusines = new mongoose.Schema({
     name: { type: String, required: true, lowercase: true },
     img: { type: String, required: true }
@@ -39,6 +46,7 @@ const location = new mongoose.Schema({
 });
 module.exports = {
     category: new mongoose.model('category', category),
+    type: new mongoose.model('type', type),
     location: new mongoose.model('location', location),
     cusines: new mongoose.model('cusines', cusines),
     menuLikeItem: new mongoose.model('menuLikeItem', menuLikeItem)

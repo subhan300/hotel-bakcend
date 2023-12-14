@@ -22,6 +22,9 @@ const restaurantMenu = new mongoose.Schema({
     required: true,
   type: mongoose.Schema.Types.ObjectId,
   },
-  
+  type:{
+    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+  }
 });
 module.exports = new Modal('restaurantMenu', restaurantMenu);
