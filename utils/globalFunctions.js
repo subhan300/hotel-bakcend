@@ -146,6 +146,22 @@ const completeRestaurantResponse = async (items) => {
       },
     },
     {
+      $lookup: {
+        from: "cusines",
+        localField: "menus.cusines",
+        foreignField: "_id",
+        as: "menus.cusines"
+      }
+    },
+    {
+      $lookup: {
+        from: "types",
+        localField: "menus.type",
+        foreignField: "_id",
+        as: "menus.type"
+      }
+    },
+    {
       $group: {
         _id: "$_id",
         name: { $first: "$name" },
@@ -162,6 +178,8 @@ const completeRestaurantResponse = async (items) => {
             price: "$menus.price",
             img: "$menus.img",
             category: { $arrayElemAt: ["$menus.category", 0] },
+            cusines: { $arrayElemAt: ["$menus.cusines.name", 0] },
+            type: {$arrayElemAt:["$menus.type.type",0]}
           },
         },
       },
@@ -189,9 +207,9 @@ const completeRestaurantResponse = async (items) => {
   return response;
 };
 
-const isExist = async (model, criteria)=> {
+const isExist = async (model, criteria) => {
   try {
-    console.log(criteria,'--',model)
+    console.log(criteria, '--', model)
     const document = await model.findOne(criteria); // Search based on criteria
     return !!document; // Returns true if document exists, false if not
   } catch (error) {

@@ -92,14 +92,27 @@ const getRestaurantById = async (req, res) => {
 const searchRestaurant = async (req, res) => {
   try {
     const queryKey = req.query;
+    console.log(queryKey)
     let restaurantsCombine = await globalFunctions.completeRestaurantResponse([]);
     let searchResult;
     if (queryKey.location) {
       searchResult = restaurantsCombine.filter(val => val.locations === queryKey.location)
     } else if (queryKey.dish) {
-       searchResult = []
+      searchResult = []
       restaurantsCombine.forEach(val => {
         const filterMenu = val.menus.filter(menu => menu.dish === queryKey.dish)
+        if (filterMenu.length) {
+          searchResult.push({ ...val, menus: filterMenu })
+        }
+
+      }
+      )
+      // console.log(searchResult)
+    } else if (queryKey.cusines) {
+      searchResult = []
+      restaurantsCombine.forEach(val => {
+        console.log('val===',val)
+        const filterMenu = val.menus.filter(menu => menu.dish === queryKey.cusines)
         if (filterMenu.length) {
           searchResult.push({ ...val, menus: filterMenu })
         }
