@@ -49,6 +49,7 @@ const getTryMenuItems = async (req, res) => {
             {
                 _id: "$menuId",
                 menuLikeItems: { $first: '$trueLikesCount.userLike' },
+                allUsersLikes: { $first: '$trueLikesCount' },
                 menus:{$first:'$menus'},
                 menuId:{$first:"$menus._id"},
                 menuInfo:{$first:"$menus.menuInfo"},
@@ -83,7 +84,8 @@ const getTryMenuItems = async (req, res) => {
                         }
                       }
                     }
-                  }
+                  },
+                  allUsersLikes: 1
             }
         }
 
