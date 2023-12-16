@@ -93,17 +93,23 @@ const getLikeMenuItem=async(req,res)=>{
           res.status(401).send({message:err.message})
     }
 }
-const addLikeMenuItem=async(req,res)=>{
-    try{  
-        const {userId,menuId,userLike}=req.body;
-        const addLikeItem=await new helperModel.menuLikeItem({userId,menuId,userLike})
-        const saveResult=await addLikeItem.save()
-        res.status(200).send(saveResult)
-
-    }catch(err){
-          res.status(401).send({message:err.message})
+const addLikeMenuItem = async (req, res) => {
+    try {
+      const { userId, menuId, userLike } = req.body;
+  
+      // Find and update the document if it exists, otherwise create a new one
+      const updatedItem = await helperModel.menuLikeItem.findOneAndUpdate(
+        { userId, menuId },
+        { userId, menuId, userLike },
+        { new: true, upsert: true }
+      );
+  
+      res.status(200).send(updatedItem);
+    } catch (err) {
+      res.status(401).send({ message: err.message });
     }
-}
+  };
+  
 
 const getCusines=async(req,res)=>{
     try{
