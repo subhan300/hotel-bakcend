@@ -16,7 +16,7 @@ const addPromotion = async (req, res) => {
             { path: "restaurantId", select: "name" },
             { path: "menuId", select: "dish price img" }
         ]);
-       
+
         res.status(200).send(promotionInfo);
 
     } catch (error) {
@@ -68,7 +68,7 @@ const addPromotion = async (req, res) => {
 //                     restaurant: {$first:"restaurant.name"},
 //                     menu: {$first:'menu.dish'},
 //                     img:{$first:'menu.img'},
-                   
+
 //                     // menuLikeItem: '$menuLikeItem.userLike',
 //                     discount: {$first:'discount'},
 //                     openingAt: {$first:'openingAt'},
@@ -90,7 +90,7 @@ const addPromotion = async (req, res) => {
 
 
 
-  
+
 //         const resi = await promotion.aggregate(pipeline)
 //         console.log("res===", resi)
 
@@ -148,6 +148,7 @@ const getPromotion = async (req, res) => {
                     openingAt: { $first: '$openingAt' },
                     expireDate: { $first: '$expireDate' },
                     menuLikeItems: { $first: '$menuLikeItems.userLike' },
+                    allUsersLikes: { $first: '$menuLikeItems' }
                 },
             },
             {
@@ -164,18 +165,19 @@ const getPromotion = async (req, res) => {
                     expireDate: 1,
                     trueLikesCount: {
                         $reduce: {
-                          input: "$menuLikeItems",
-                          initialValue: 0,
-                          in: {
-                            $cond: {
-                              if: { $eq: ["$$this", true] },
-                              then: { $add: ["$$value", 1] },
-                              else: "$$value"
+                            input: "$menuLikeItems",
+                            initialValue: 0,
+                            in: {
+                                $cond: {
+                                    if: { $eq: ["$$this", true] },
+                                    then: { $add: ["$$value", 1] },
+                                    else: "$$value"
+                                }
                             }
-                          }
                         }
-                      }
-                    
+                    },
+                    allUsersLikes: 1
+
                 },
             },
         ];
