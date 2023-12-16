@@ -143,24 +143,48 @@ const filterRestaurant = async (req, res) => {
   try {
     const keyCollection = req.query
     let restaurants = await globalFunctions.completeRestaurantResponse([]);
-    for (const key in keyCollection) {
-      const value = keyCollection[key];
-      if (key === "location") {
-        restaurants = restaurants.filter(val => val.locations === value)
-      } else if (key === "category") {
-        const categoryList = value.split(',')
-        restaurants = restaurants.filter(restaurant => restaurant.menus.some(menu => categoryList.includes(menu.category.name)))
-      } else if (key === "price") {
-        const priceList = value.split(',')
-        console.log('price', priceList)
-        restaurants = restaurants.filter(restaurant => restaurant.menus.some(menu => priceList.some(price => menu.price <= Number(price))))
-      } else if (key === "rating") {
-        const ratingList = value.split(',')
-        console.log('rating', ratingList)
-        restaurants = restaurants.filter(restaurant => ratingList.some(rating => restaurant.reviews >= Number(rating)))
-        console.log(restaurants)
-      }
 
+    if (keyCollection.for === "restaurant") {
+      for (const key in keyCollection) {
+
+        console.log(key)
+        const value = keyCollection[key];
+        if (key === "location") {
+          restaurants = restaurants.filter(val => val.locations === value)
+        } else if (key === "category") {
+          const categoryList = value.split(',')
+          restaurants = restaurants.filter(restaurant => restaurant.menus.some(menu => {
+            return categoryList.includes(menu.category.name)
+          }))
+        } else if (key === "price") {
+          const priceList = value.split(',')
+          console.log('price', priceList)
+          restaurants = restaurants.filter(restaurant => restaurant.menus.some(menu => priceList.some(price => menu.price <= Number(price))))
+        } else if (key === "rating") {
+          const ratingList = value.split(',')
+          console.log('rating', ratingList)
+          restaurants = restaurants.filter(restaurant => ratingList.some(rating => restaurant.reviews >= Number(rating)))
+          console.log(restaurants)
+        }
+
+      }
+    } else {
+      for (const key in keyCollection) {
+        console.log('key=====>', key)
+        const value = keyCollection[key];
+        if (key === "location") {
+          restaurants = restaurants.filter(val => val.locations === value)
+        } else if (key === "category") {
+          const categoryList = value.split(',')
+          restaurants = restaurants.map(restaurant => ({
+            ...restaurant,
+            menus: restaurant.menus.filter(menu => categoryList.includes(menu.category.name))
+          })).filter(val=>val.menus.length);
+        } else if (key === "price") {
+          const priceList = value.split(',')
+          restaurants = restaurants.map(restaurant => ({ ...restaurant, menus: restaurant.menus.filter(menu => priceList.some(price => menu.price <= Number(price))) })).filter(val=>val.menus.length)
+        }
+      }
     }
 
     res.status(200).send(restaurants);
