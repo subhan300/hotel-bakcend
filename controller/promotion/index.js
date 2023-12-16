@@ -24,10 +24,12 @@ const addPromotion = async (req, res) => {
     }
 }
 
+
 // const getPromotion = async (req, res) => {
+
 //     try {
-//         const result = await promotion.find({}).populate({ path: "restaurantId", select: "name" }).populate({ path: "menuId", select: "dish price img" });
-//     //   always check from : mongoose collection name 
+//         const userId = req.query.userId
+//         console.log('userid=', userId)
 //         const pipeline = [
 //             {
 //                 $lookup: {
@@ -56,54 +58,70 @@ const addPromotion = async (req, res) => {
 //                     from: 'menulikeitems',
 //                     localField: 'menuId',
 //                     foreignField: 'menuId',
-//                     as: 'menuLikeItem',
+//                     as: 'menuLikeItems',
+//                 },
+//             },
+            
+//             {
+//                 $group: {
+//                     _id: '$menuId',
+//                     restaurant: { $first: '$restaurant.name' },
+//                     restaurantId: { $first: '$restaurant._id' },
+//                     menu: { $first: '$menu.dish' },
+//                     menuId: { $first: '$menu._id' },
+//                     img: { $first: '$menu.img' },
+//                     price: { $first: '$menu.price' },
+//                     discount: { $first: '$discount' },
+//                     openingAt: { $first: '$openingAt' },
+//                     expireDate: { $first: '$expireDate' },
+//                     menuLikeItems: { $first: '$menuLikeItems.userLike' },
+//                     allUsersLikes: { $first: '$menuLikeItems' }
 //                 },
 //             },
 //             {
-//                 $unwind: '$menuLikeItem',
-//             },
-//             {
-//                 $group:{
-//                     _id: '$menuId',
-//                     restaurant: {$first:"restaurant.name"},
-//                     menu: {$first:'menu.dish'},
-//                     img:{$first:'menu.img'},
+//                 $project: {
+//                     _id: 0,
+//                     restaurant: 1,
+//                     restaurantId: 1,
+//                     menu: 1,
+//                     menuId: 1,
+//                     img: 1,
+//                     price: 1,
+//                     discount: 1,
+//                     openingAt: 1,
+//                     expireDate: 1,
+//                     trueLikesCount: {
+//                         $reduce: {
+//                             input: "$menuLikeItems",
+//                             initialValue: 0,
+//                             in: {
+//                                 $cond: {
+//                                     if: { $eq: ["$$this", true] },
+//                                     then: { $add: ["$$value", 1] },
+//                                     else: "$$value"
+//                                 }
+//                             }
+//                         }
+//                     },
+//                     allUsersLikes: 1
 
-//                     // menuLikeItem: '$menuLikeItem.userLike',
-//                     discount: {$first:'discount'},
-//                     openingAt: {$first:'openingAt'},
-//                     expireDate:{$first:'expireDate'},
-//                 }
-//                 // $project: {
-//                 //     _id: 0,
-//                 //     restaurant: '$restaurant.name',
-//                 //     menu: '$menu.dish',
-//                 //     img:'$menu.img',
-//                 //     price: '$menu.price',
-//                 //     // menuLikeItem: '$menuLikeItem.userLike',
-//                 //     discount: 1,
-//                 //     openingAt: 1,
-//                 //     expireDate:1
-//                 // },
+//                 },
 //             },
 //         ];
 
-
-
-
-//         const resi = await promotion.aggregate(pipeline)
-//         console.log("res===", resi)
-
-//         // const filterRestaurants = result.filter(res => res.restaurantId && res.menuId)
-//         // res.status(200).send(result);
+//         const resi = await promotion.aggregate(pipeline);
 //         res.status(200).send(resi);
-
 //     } catch (error) {
 //         res.status(500).send(`Something went wrong ${error}`);
 //     }
-// }
+// };
+
+
 const getPromotion = async (req, res) => {
     try {
+        const userId = req.query.userId;
+        console.log('userid=', userId);
+
         const pipeline = [
             {
                 $lookup: {
@@ -136,22 +154,6 @@ const getPromotion = async (req, res) => {
                 },
             },
             {
-                $group: {
-                    _id: '$menuId',
-                    restaurant: { $first: '$restaurant.name' },
-                    restaurantId: { $first: '$restaurant._id' },
-                    menu: { $first: '$menu.dish' },
-                    menuId: { $first: '$menu._id' },
-                    img: { $first: '$menu.img' },
-                    price: { $first: '$menu.price' },
-                    discount: { $first: '$discount' },
-                    openingAt: { $first: '$openingAt' },
-                    expireDate: { $first: '$expireDate' },
-                    menuLikeItems: { $first: '$menuLikeItems.userLike' },
-                    allUsersLikes: { $first: '$menuLikeItems' }
-                },
-            },
-            {
                 $project: {
                     _id: 0,
                     restaurant: 1,
@@ -165,20 +167,32 @@ const getPromotion = async (req, res) => {
                     expireDate: 1,
                     trueLikesCount: {
                         $reduce: {
-                            input: "$menuLikeItems",
+                            input: '$menuLikeItems',
                             initialValue: 0,
                             in: {
                                 $cond: {
-                                    if: { $eq: ["$$this", true] },
-                                    then: { $add: ["$$value", 1] },
-                                    else: "$$value"
+                                    if: { $eq: ['$$this.userLike', true] },
+                                    then: { $add: ['$$value', 1] },
+                                    else: '$$value'
                                 }
                             }
                         }
                     },
-                    allUsersLikes: 1
-
+                    allUsersLikes: {
+                        $filter: {
+                            input: '$menuLikeItems',
+                            as: 'like',
+                            cond: { $eq: ['$$like.userId',new mongoose.Types.ObjectId(userId)] }
+                        }
+                    }
                 },
+            },
+            {
+                $addFields: {
+                    allUsersLikes: {
+                        $arrayElemAt: ['$allUsersLikes', 0]
+                    }
+                }
             },
         ];
 
@@ -188,6 +202,8 @@ const getPromotion = async (req, res) => {
         res.status(500).send(`Something went wrong ${error}`);
     }
 };
+
+
 
 
 const featureRestaurant = async (req, res) => {

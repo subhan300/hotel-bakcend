@@ -82,7 +82,6 @@ const getRestaurantById = async (req, res) => {
     const restaurant = await globalFunctions.completeRestaurantResponse([{
       $match: { _id: new ObjectId(id) },
     }])
-    console.log("==", restaurant);
     res.send(restaurant);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -111,15 +110,13 @@ const searchRestaurant = async (req, res) => {
     } else if (queryKey.cusines) {
       searchResult = []
       restaurantsCombine.forEach(val => {
-        console.log('val===',val)
-        const filterMenu = val.menus.filter(menu => menu.dish === queryKey.cusines)
+        const filterMenu = val.menus.filter(menu => menu.cusines === queryKey.cusines)
         if (filterMenu.length) {
           searchResult.push({ ...val, menus: filterMenu })
         }
 
       }
       )
-      // console.log(searchResult)
     } else {
       return res.status(401).send('search with dish or location');
     }

@@ -26,7 +26,7 @@ const menuLikeItem = new mongoose.Schema({
     menuId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'restaurantMenu',
-        required: true
+        required: false
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -34,7 +34,11 @@ const menuLikeItem = new mongoose.Schema({
         required: true,
     },
 
-
+   restaurantId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'restaurant',
+    required:false
+   },
     userLike: { type: Boolean, required: true }
 
 });
