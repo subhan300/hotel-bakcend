@@ -100,8 +100,6 @@ const searchRestaurant = async (req, res) => {
        searchResult = []
       restaurantsCombine.forEach(val => {
         const filterMenu = val.menus.filter(menu => menu.dish === queryKey.dish)
-
-        console.log("menus===>", filterMenu);
         if (filterMenu.length) {
           searchResult.push({ ...val, menus: filterMenu })
         }

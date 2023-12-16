@@ -8,7 +8,7 @@ const addReview = async (req, res) => {
         const reviewExistOfUser = await Review.findOne({ userId })
         
         if (reviewExistOfUser) {
-            return res.status(200).send("Duplicate review not allowed for same user")
+            return res.status(400).send("Duplicate review not allowed for same user")
         }
         
 
