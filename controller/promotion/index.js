@@ -198,7 +198,7 @@ const getPromotion = async (req, res) => {
             {
                 $addFields: {
                     personalLike: {
-                        $arrayElemAt: ['$personalLike', 0]
+                        $ifNull: [{ $arrayElemAt: ['$personalLike', 0] }, null]
                     }
                 }
             },
