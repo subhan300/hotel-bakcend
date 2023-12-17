@@ -7,7 +7,7 @@ cron.schedule('* * * * *', async () => {
     try {
         const currentDate =dayjs(new Date()).format("YYYY-MM-DD");
         console.log("current date",currentDate)
-        await promotion.deleteMany({ expireDate: { $lte: currentDate } });
+        await promotion.deleteOne({ expireDate: { $lte: currentDate } });
     } catch (error) {
         console.error('Error deleting expired documents:', error);
     }

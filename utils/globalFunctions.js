@@ -179,7 +179,7 @@ const completeRestaurantResponse = async (items) => {
             img: "$menus.img",
             category: { $arrayElemAt: ["$menus.category", 0] },
             cusines: { $arrayElemAt: ["$menus.cusines.name", 0] },
-            type: {$arrayElemAt:["$menus.type.type",0]}
+            type: { $arrayElemAt: ["$menus.type.type", 0] }
           },
         },
       },
@@ -207,6 +207,164 @@ const completeRestaurantResponse = async (items) => {
   return response;
 };
 
+
+const restaurantDetail = async (items) => {
+  const response = await Restaurant.aggregate([
+    ...items,
+    {
+      $lookup: {
+        from: "restaurantmenus",
+        localField: "_id",
+        foreignField: "restaurantId",
+        as: "menus",
+      },
+    },
+    { $unwind: "$menus" },
+    
+    {
+      $lookup: {
+        from: "reviews",
+        let: { restaurantId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $and: [{ $eq: ["$restaurantId", "$$restaurantId"] }, { $gt: ["$rating", 0] }] },
+            },
+          },
+          { $limit: 1 }, // Limit 1 review per restaurant
+        ],
+        as: "review",
+      },
+    },
+    { $unwind: { path: "$review", preserveNullAndEmptyArrays: true } }, // Preserve null reviews
+    {
+      $lookup: {
+        from: "categories",
+        localField: "menus.category",
+        foreignField: "_id",
+        as: "menus.category",
+      },
+    },
+    {
+      $lookup: {
+        from: "cusines",
+        localField: "menus.cusines",
+        foreignField: "_id",
+        as: "menus.cusines"
+      }
+    },
+    {
+      $lookup: {
+        from: "types",
+        localField: "menus.type",
+        foreignField: "_id",
+        as: "menus.type"
+      }
+    },
+    {
+      $lookup: {
+        from: "promotions",
+        foreignField: "restaurantId",
+        localField: "_id",
+        as: "promotion",
+      },
+    },
+    { $unwind: { path: "$promotion", preserveNullAndEmptyArrays: true } }, // Unwind to preserve empty arrays
+    {
+      $lookup: {
+        from: "trymenuitems",
+        foreignField: "restaurantId",
+        localField: "_id",
+        as: "tryMenuItem",
+      },
+    },
+    { $unwind: { path: "$tryMenuItem", preserveNullAndEmptyArrays: true } }, 
+    {
+      $lookup: {
+        from: "locations",
+        localField: "location",
+        foreignField: "_id",
+        as: "location",
+      },
+    },
+    { $unwind: "$location" },
+    {
+      $group: {
+        _id: "$_id",
+        name: { $first: "$name" },
+        email: { $first: "$email" },
+        phone: { $first: "$phone" },
+        logo: { $first: "$logo" },
+        description: { $first: "$description" },
+        locations: { $first: "$location.street" },
+        reviews: { $max: { $ifNull: ["$review.rating", 0] } },
+        menus: {
+          $push: {
+            _id: "$menus._id",
+            dish: "$menus.dish",
+            price: "$menus.price",
+            img: "$menus.img",
+            category: { $arrayElemAt: ["$menus.category", 0] },
+            cusines: { $arrayElemAt: ["$menus.cusines.name", 0] },
+            type: { $arrayElemAt: ["$menus.type.type", 0] }
+          },
+        },
+        promotion: {
+          $addToSet: {
+            "promotionId":"$promotion._id",
+            "expireDate": "$promotion.expireDate",
+            "discount": "$promotion.discount",
+            "menuId": "$promotion.menuId",
+            "openingAt": "$promotion.openingAt"
+          }
+      }
+    ,
+    tryMenuItem:{
+      $addToSet:{
+        "menuId":"$tryMenuItem.menuId",
+        "tryThisProductId":"$tryMenuItem._id"
+      }
+    }
+    }},
+    
+    
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        email: 1,
+        phone: 1,
+        logo: 1,
+        description: 1,
+        locations: 1,
+        reviews: {
+          $cond: {
+            if: { $eq: ["$reviews", null] },
+            then: 0,
+            else: "$reviews",
+          },
+        },
+        menus: 1,
+        promotion: {
+          $filter:{
+            input: '$promotion',
+            as: 'promotion',
+            cond: { $ne: ['$$promotion', {}] }
+        }
+        },
+        tryMenuItem:{
+          $filter:{
+            input: '$tryMenuItem',
+            as: 'tryMenu',
+            cond: { $ne: ['$$tryMenu', {}] }
+        }
+        }
+      },
+    },
+  ]);
+  return response;
+};
+
 const isExist = async (model, criteria) => {
   try {
     console.log(criteria, '--', model)
@@ -222,5 +380,6 @@ const isExist = async (model, criteria) => {
 module.exports = {
   restaurantCombineWithChunk,
   completeRestaurantResponse,
-  isExist
+  isExist,
+  restaurantDetail
 }

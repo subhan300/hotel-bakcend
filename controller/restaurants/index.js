@@ -79,7 +79,7 @@ const getRestaurantAllId = async (req, res) => {
 const getRestaurantById = async (req, res) => {
   try {
     const id = req.query.id;
-    const restaurant = await globalFunctions.completeRestaurantResponse([{
+    const restaurant = await globalFunctions.restaurantDetail([{
       $match: { _id: new ObjectId(id) },
     }])
     res.send(restaurant);
