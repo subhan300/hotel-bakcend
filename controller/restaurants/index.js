@@ -450,8 +450,8 @@ const deleteRestaurant = async (req, res) => {
       await Restaurant.findByIdAndDelete(restaurantId);
     }
     if (menuId) {
-     const menuDeleted= await restaurantMenu.findByIdAndDelete(menuId);
-     console.log(menuDeleted)
+      const menuDeleted = await restaurantMenu.findByIdAndDelete(menuId);
+      console.log(menuDeleted)
     }
     res.status(200).send("Deleted Successfully")
   } catch (err) {

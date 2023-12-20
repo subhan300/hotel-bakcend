@@ -65,10 +65,8 @@ const addLocation = async (req, res) => {
 
 const getLocation = async (req, res) => {
     try {
-        const pageSize = 2
-        console.log(req.query)
-        const pageNumber = parseInt(req.query.pageSize) || 1;
-        const getLocations = await helperModel.location.find({}).skip((pageNumber - 1) * pageSize).limit(2)
+      
+        const getLocations = await helperModel.location.find({})
         res.status(200).send(getLocations)
 
     } catch (err) {
