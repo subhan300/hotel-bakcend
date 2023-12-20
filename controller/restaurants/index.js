@@ -335,19 +335,19 @@ const getRestaurantAggreParactice = async (req, res) => {
 
     // ]);
 
-    // res.status(200).send(restaurant)
+
     const query = { $text: { $search: "restaurant" } };
     // Return only the `title` of each matched document
     const projection = {
       _id: 0,
       name: 1,
-      description:1
+      description: 1
     };
     // Find documents based on our query and projection
-    const findRestaurant =await Restaurant.find(query).select(projection);
+    // const findRestaurant =await Restaurant.find(query).select(projection);
     // const searchKeyword = "horizon"
     //   ? {
-      
+
     //     email:{
     //       $regex:"absdc3",
     //       $options:'i'
@@ -355,14 +355,113 @@ const getRestaurantAggreParactice = async (req, res) => {
     //   }
     //   : {};
     // const findRestaurant = await Restaurant.find({ ...searchKeyword });
-    res.status(200).send(findRestaurant)
+    // res.status(200).send(findRestaurant)
+    const restaurant = await Restaurant.aggregate([
+      {
+        $match: {
+          name: {
+            $eq: 'Horizon'
+          }
+        }
+      },
+      {
+        $count: "name"
+      }
+
+      // {
+      //   $lookup: {
+      //     from: "restaurantmenus",
+      //     localField: "_id",
+      //     foreignField: "restaurantId",
+      //     as: "menus"
+      //   },
+
+      // },
+      // { $unwind: "$menus" },
+      // {
+      //   $lookup: {
+      //     from: "categories",
+      //     foreignField: "_id",
+      //     localField: "menus.category",
+      //     as: "menus.category",
+
+      //   }
+      // },
+      // {
+      //   $group: {
+      //     _id: "$_id",
+      //     menus: {
+      //       $addToSet: {
+      //         "_id": "$menus._id",
+      //         "dish": "$menus.dish"
+      //       }
+      //     },
+      //     count:{$sum:1}
+
+      //   }
+      // },
+      // {
+      //   $project: {
+      //     _id: 1,
+      //     name: 1,
+      //     menus: 1,
+      //   // count:1
+      //   },
+      // },
+
+
+    ])
+    res.status(200).send(restaurant)
   } catch (err) {
     console.log(err);
     res.status(400).send(err.message)
   }
 };
+const updateRestaurant = async (req, res) => {
+  try {
+    const restaurantId = req.query.restaurantId;
+    const menuId = req.query.menuId
+    const { restaurantAttributes, menuAttributes } = req.body;
+    let updateResult;
+    if (restaurantId && restaurantAttributes) {
+      updateResult = await Restaurant.findByIdAndUpdate(restaurantId, restaurantAttributes, { new: true });
+    }
 
+    if (menuId && menuAttributes) {
+      const temp = await restaurantMenu
+        .findByIdAndUpdate(menuId, menuAttributes, { new: true })
+        .populate("category")
+        .populate({ path: "cusines", select: "name -_id" })
+        .populate({ path: "type", select: "type -_id" });
+
+      updateResult = { ...updateResult?._doc, menus: { ...temp._doc, cusines: temp._doc.cusines.name, type: temp._doc.type.type } }
+
+    }
+    res.status(200).send(updateResult)
+  } catch (err) {
+    res.status(400).send(err.message)
+  }
+}
+const deleteRestaurant = async (req, res) => {
+  try {
+    const restaurantId = req.query.restaurantId;
+    const menuId = req.query.menuId;
+    if (restaurantId) {
+      await Restaurant.findByIdAndDelete(restaurantId);
+    }
+    if (menuId) {
+     const menuDeleted= await restaurantMenu.findByIdAndDelete(menuId);
+     console.log(menuDeleted)
+    }
+    res.status(200).send("Deleted Successfully")
+  } catch (err) {
+    res.status(200).send(err)
+  }
+
+}
 module.exports = {
+  deleteRestaurant,
+  updateRestaurant,
   getRestaurantAggreParactice,
   addRestaurants,
   getRestaurants,

@@ -220,7 +220,7 @@ const restaurantDetail = async (items) => {
       },
     },
     { $unwind: "$menus" },
-    
+
     {
       $lookup: {
         from: "reviews",
@@ -278,7 +278,15 @@ const restaurantDetail = async (items) => {
         as: "tryMenuItem",
       },
     },
-    { $unwind: { path: "$tryMenuItem", preserveNullAndEmptyArrays: true } }, 
+    { $unwind: { path: "$tryMenuItem", preserveNullAndEmptyArrays: true } },
+    {
+      $lookup: {
+        from: "restaurantmenus",
+        foreignField: "_id",
+        localField: "tryMenuItem.menuId",
+        as:"tryMenuItem.menu"
+      }
+    },
     {
       $lookup: {
         from: "locations",
@@ -311,23 +319,24 @@ const restaurantDetail = async (items) => {
         },
         promotion: {
           $addToSet: {
-            "promotionId":"$promotion._id",
+            "promotionId": "$promotion._id",
             "expireDate": "$promotion.expireDate",
             "discount": "$promotion.discount",
             "menuId": "$promotion.menuId",
             "openingAt": "$promotion.openingAt"
           }
+        }
+        ,
+        tryMenuItem: {
+          $addToSet: {
+            "menuId": "$tryMenuItem.menuId",
+            "tryThisProductId": "$tryMenuItem._id"
+          }
+        }
       }
-    ,
-    tryMenuItem:{
-      $addToSet:{
-        "menuId":"$tryMenuItem.menuId",
-        "tryThisProductId":"$tryMenuItem._id"
-      }
-    }
-    }},
-    
-    
+    },
+
+
     {
       $project: {
         _id: 1,
@@ -346,18 +355,18 @@ const restaurantDetail = async (items) => {
         },
         menus: 1,
         promotion: {
-          $filter:{
+          $filter: {
             input: '$promotion',
             as: 'promotion',
             cond: { $ne: ['$$promotion', {}] }
-        }
+          }
         },
-        tryMenuItem:{
-          $filter:{
+        tryMenuItem: {
+          $filter: {
             input: '$tryMenuItem',
             as: 'tryMenu',
             cond: { $ne: ['$$tryMenu', {}] }
-        }
+          }
         }
       },
     },

@@ -11,5 +11,7 @@ router.get("/searchRestaurant",actions.searchRestaurant)
 router.get("/searchByName",actions.searchRestaurantByName)
 router.get("/filter",actions.filterRestaurant)
 router.get("/aggregateParactice",actions.getRestaurantAggreParactice)
+router.put("/update",actions.updateRestaurant)
+router.delete("/delete",actions.deleteRestaurant)
 
 module.exports=router

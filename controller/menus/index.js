@@ -34,9 +34,20 @@ const addMenus = async (req, res) => {
       res.status(500).json({ message: err.message });
     }
   }
-
+  const updateMenu = async (req, res) => {
+    try {
+      const id = req.query.id;
+      const updateAttributes = req.body;
+      const updateResult = await menus.findByIdAndUpdate(id, updateAttributes,{ new: true });
+      res.status(200).send(updateResult)
+  
+    } catch (err) {
+      res.status(400).send(err.message)
+    }
+  }
 module.exports={
     addMenus,
     getMenuAllId,
-    getMenuByRestaurantId
+    getMenuByRestaurantId,
+    updateMenu
 }

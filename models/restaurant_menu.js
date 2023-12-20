@@ -13,6 +13,7 @@ const restaurantMenu = new mongoose.Schema({
   category: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
+    ref:'category',
   },
   createdAt: {
     type: Date,
@@ -21,10 +22,12 @@ const restaurantMenu = new mongoose.Schema({
   cusines: {
     required: true,
   type: mongoose.Schema.Types.ObjectId,
+  ref:'cusines'
   },
   type:{
     required: true,
     type: mongoose.Schema.Types.ObjectId,
+    ref:"type"
   }
 });
 module.exports = new Modal('restaurantMenu', restaurantMenu);
