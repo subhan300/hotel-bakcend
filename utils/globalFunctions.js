@@ -273,8 +273,8 @@ const restaurantDetail = async (items) => {
     {
       $lookup: {
         from: "trymenuitems",
-        foreignField: "restaurantId",
-        localField: "_id",
+        foreignField: "menuId",
+        localField: "menus._id",
         as: "tryMenuItem",
       },
     },

@@ -10,5 +10,6 @@ router.get("/getRestaurantById",actions.getRestaurantById)
 router.get("/searchRestaurant",actions.searchRestaurant)
 router.get("/searchByName",actions.searchRestaurantByName)
 router.get("/filter",actions.filterRestaurant)
+router.get("/aggregateParactice",actions.getRestaurantAggreParactice)
 
 module.exports=router
