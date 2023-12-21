@@ -27,9 +27,9 @@ const addRestaurants = async (req, res) => {
       "_id",
       location
     );
-    if (!checkRestaurant) {
-      return res.status(401).send({ message: "Location Not Exist Exist" });
-    }
+    // if (!checkRestaurant) {
+    //   return res.status(401).send({ message: "Location Not Exist Exist" });
+    // }
     const restaurant = new Restaurant({
       name,
       email,
