@@ -7,13 +7,20 @@ const login = async (req, res) => {
         if (!email || !password) {
             return res.status(422).send({ error: 'You must provide email and password.' });
         }
-        const result = await user.findOne({ email });
+        let result = await user.findOne({ email });
+        
         if (!result) {
-            return res.status(401).send({
-                message: 'Invalid email or password',
+            // return res.status(401).send({
+            //     message: 'Invalid email or password',
+            // });
+            const userCreated = new user({
+                email,
+                password,
+                status: true
             });
+           result = await userCreated.save();
         }
-        if (result) {
+      
             const getPassword = await user.findOne({ password });
             if (getPassword) {
                 const token = jwt.sign({ result }, 'hotel123', {
@@ -31,7 +38,7 @@ const login = async (req, res) => {
                     message: 'Invalid email or password',
                 });
             }
-        }
+        
     } catch (error) {
         console.error(error);
         res.status(500).send('Something went wrong');
@@ -49,16 +56,16 @@ const signUp = async (req, res) => {
             return res.status(401).send({
                 message: 'Email Duplicate not allowed',
             });
-        } 
-    const result = new user({
-                name,
-                email,
-                password,
-                status: true
-            });
-            const data = await result.save();
-            res.status(200).send(data);
-        
+        }
+        const result = new user({
+            name,
+            email,
+            password,
+            status: true
+        });
+        const data = await result.save();
+        res.status(200).send(data);
+
     } catch (error) {
         console.log(error);
         res.status(500).send('Something went wrong');
