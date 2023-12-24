@@ -165,6 +165,7 @@ const completeRestaurantResponse = async (items) => {
       $group: {
         _id: "$_id",
         name: { $first: "$name" },
+        businessInfo:{$first:"businessInfo"},
         email: { $first: "$email" },
         phone: { $first: "$phone" },
         logo: { $first: "$logo" },
@@ -188,6 +189,7 @@ const completeRestaurantResponse = async (items) => {
       $project: {
         _id: 1,
         name: 1,
+        businessInfo:1,
         email: 1,
         phone: 1,
         logo: 1,
@@ -300,6 +302,7 @@ const restaurantDetail = async (items) => {
       $group: {
         _id: "$_id",
         name: { $first: "$name" },
+        businessInfo:{$first:"$businessInfo"},
         email: { $first: "$email" },
         phone: { $first: "$phone" },
         logo: { $first: "$logo" },
@@ -341,6 +344,7 @@ const restaurantDetail = async (items) => {
       $project: {
         _id: 1,
         name: 1,
+        businessInfo:1,
         email: 1,
         phone: 1,
         logo: 1,

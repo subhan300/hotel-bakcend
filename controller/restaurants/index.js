@@ -94,6 +94,7 @@ const getRestaurantById = async (req, res) => {
         $match: { _id: new ObjectId(id) },
       },
     ]);
+    console.log("res====",restaurant)
     res.send(restaurant);
   } catch (err) {
     res.status(500).json({ message: err.message });
